@@ -11,8 +11,8 @@ import (
 )
 
 type Database struct {
-	host      string
-	port      int
+	Host      string
+	Port      int
 	connected bool
 	mongo     *mongo.Client
 }
@@ -26,7 +26,7 @@ func (db *Database) Connect() {
 		log.Println("already connected to database.")
 		return
 	}
-	clientOptions := options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%d", db.host, db.port))
+	clientOptions := options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%d", db.Host, db.Port))
 
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 
@@ -56,6 +56,14 @@ func (db *Database) Save(database string, collection string, data ...interface{}
 	fmt.Println("Inserted documents: ", insertR.InsertedIDs)
 }
 
-func (db *Database) Find(database string, collection string, filter bson.D) {
+func (db *Database) FindOne(database string, collection string, filter bson.D) interface{} {
+	var result interface{}
 
+	c := db.mongo.Database(database).Collection(collection)
+	err := c.FindOne(context.TODO(), filter).Decode(&result)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return result
 }
