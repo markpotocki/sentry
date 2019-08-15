@@ -2,8 +2,7 @@ package view
 
 import (
 	"html/template"
-	"idendity-provider/database"
-	user "idendity-provider/user"
+	"idendity-provider/user"
 	"log"
 	"net/http"
 )
@@ -12,15 +11,6 @@ type LoginPageVars struct {
 	PageTitle    string
 	UsernameHelp string
 	PwdHelp      string
-}
-
-var ls user.LoginService
-
-func Init() {
-	db := &database.Database{Host: "localhost", Port: 27017}
-	db.Connect()
-	dls := user.DatabaseLoginService{db}
-	ls = dls
 }
 
 func LoginPage(w http.ResponseWriter, r *http.Request) {
@@ -55,7 +45,7 @@ func postLoginPage(w http.ResponseWriter, r *http.Request) {
 	un := r.Form.Get("username")
 	pwd := r.Form.Get("password")
 	log.Printf("Request made for user: %s with pwd: %s.", un, pwd)
-	isLoggedIn := ls.Login(un, pwd)
+	isLoggedIn := user.LS.Login(un, pwd)
 	// todo save user session
 
 	if isLoggedIn {
