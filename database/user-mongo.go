@@ -14,12 +14,9 @@ type Database struct {
 	Host      string
 	Port      int
 	connected bool
-	mongo     *mongo.Client
 }
 
-type Collection struct {
-	name string
-}
+var Mongo *mongo.Client
 
 func (db *Database) Connect() {
 	if db.connected == true {
@@ -40,14 +37,14 @@ func (db *Database) Connect() {
 		log.Fatal(err)
 	}
 
-	db.mongo = client
 	db.connected = true
+	Mongo = client
 
 	fmt.Println("Connected to MongoDB")
 }
 
 func (db *Database) Save(database string, collection string, data ...interface{}) {
-	c := db.mongo.Database(database).Collection(collection)
+	c := Mongo.Database(database).Collection(collection)
 	insertR, err := c.InsertMany(context.TODO(), data)
 	if err != nil {
 		log.Fatal(err)
@@ -59,7 +56,7 @@ func (db *Database) Save(database string, collection string, data ...interface{}
 func (db *Database) FindOne(database string, collection string, filter bson.D) interface{} {
 	var result interface{}
 
-	c := db.mongo.Database(database).Collection(collection)
+	c := Mongo.Database(database).Collection(collection)
 	err := c.FindOne(context.TODO(), filter).Decode(&result)
 	if err != nil {
 		log.Fatal(err)
