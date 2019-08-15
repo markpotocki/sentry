@@ -2,6 +2,7 @@ package view
 
 import (
 	"html/template"
+	"idendity-provider/database"
 	user "idendity-provider/user"
 	"log"
 	"net/http"
@@ -11,6 +12,15 @@ type LoginPageVars struct {
 	PageTitle    string
 	UsernameHelp string
 	PwdHelp      string
+}
+
+var ls user.LoginService
+
+func Init() {
+	db := &database.Database{Host: "localhost", Port: 27017}
+	db.Connect()
+	dls := user.DatabaseLoginService{db}
+	ls = dls
 }
 
 func LoginPage(w http.ResponseWriter, r *http.Request) {
