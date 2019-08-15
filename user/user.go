@@ -50,6 +50,17 @@ func MakeUser(username string, unencodedPwd string, email string, name string) *
 	return u
 }
 
+func SaveUser(user *MyUser) {
+	c := database.Mongo.Database("user").Collection("USER")
+	user.Password = EncodePassword(user.Password) // encode password
+	insertR, err := c.InsertMany(context.TODO(), []interface{}{user})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Inserted documents: ", insertR.InsertedIDs)
+}
+
 func FindUserByUsername(username string) *MyUser {
 	var result MyUser
 	filter := bson.D{{"userid", username}}

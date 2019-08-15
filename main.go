@@ -17,7 +17,7 @@ func main() {
 	Init()
 
 	// save a test user
-	user.MakeUser("test", "test", "test", "test")
+	//user.MakeUser("test", "test", "test", "test")
 
 	http.HandleFunc("/login", view.LoginPage)
 	http.HandleFunc("/register", view.RegisterPage)

@@ -44,7 +44,6 @@ func postLoginPage(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() // todo add error check
 	un := r.Form.Get("username")
 	pwd := r.Form.Get("password")
-	log.Printf("Request made for user: %s with pwd: %s.", un, pwd)
 	isLoggedIn := user.LS.Login(un, pwd)
 	// todo save user session
 
@@ -79,4 +78,12 @@ func getRegisterPage(w http.ResponseWriter, r *http.Request) {
 func postRegisterPage(w http.ResponseWriter, r *http.Request) {
 	log.Println("Recieved post request to register")
 	log.Printf("Request: %v\n", r.Body)
+	r.ParseForm() // todo add error check
+	un := r.Form.Get("username")
+	pwd := r.Form.Get("password")
+	email := r.Form.Get("email")
+	name := r.Form.Get("name")
+	user.MakeUser(un, pwd, email, name)
+
+	http.Redirect(w, r, "/login?welcome", http.StatusTemporaryRedirect)
 }
