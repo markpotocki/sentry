@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -53,4 +54,8 @@ func (db *Database) Save(database string, collection string, data ...interface{}
 	}
 
 	fmt.Println("Inserted documents: ", insertR.InsertedIDs)
+}
+
+func (db *Database) Find(database string, collection string, filter bson.D) {
+
 }
