@@ -2,8 +2,8 @@ package user
 
 import (
 	"idendity-provider/database"
+	"log"
 
-	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -19,37 +19,25 @@ type DatabaseLoginService struct {
 	Db *database.Database
 }
 
-var db = map[string]string{
-	"test": encodePassword("test"),
-}
+var LS LoginService
 
 func (dls DatabaseLoginService) Login(username string, pwd string) bool {
-	findUser := dls.find("user", "USER")
-	result := findUser("username", username)
+	log.Printf("looking for user %s in db.\n", username)
+	result := FindUserByUsername(username)
 
-	switch v := result.(type) {
-	case MyUser:
-		err := bcrypt.CompareHashAndPassword([]byte(v.Pwd()), []byte(pwd))
-		if err != nil {
-			return false
-		}
-		return true
-	default:
+	log.Printf("result: %v", result)
+	err := bcrypt.CompareHashAndPassword([]byte(result.Pwd()), []byte(pwd))
+	if err != nil {
+		log.Println(err)
 		return false
 	}
+	return true
+
 }
 
-func (dls DatabaseLoginService) find(db string, col string) func(string, string) interface{} {
-	return func(key string, val string) interface{} {
-		filter := bson.D{{key, val}}
-		result := dls.Db.FindOne(db, col, filter)
-		return result
-	}
-}
-
-func Login(username string, pwd string) bool {
+func (b BasicLoginService) Login(username string, pwd string) bool {
 	// encode the password
-	val := db[username]
+	val := b.db[username]
 
 	if val == "" {
 		return false
