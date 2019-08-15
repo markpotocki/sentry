@@ -9,6 +9,8 @@ import (
 func main() {
 	fs := http.FileServer(http.Dir("templates/static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	// init db in view
+	view.Init()
 
 	http.HandleFunc("/login", view.LoginPage)
 	http.HandleFunc("/register", view.RegisterPage)

@@ -42,7 +42,7 @@ func (dls DatabaseLoginService) Login(username string, pwd string) bool {
 func (dls DatabaseLoginService) find(db string, col string) func(string, string) interface{} {
 	return func(key string, val string) interface{} {
 		filter := bson.D{{key, val}}
-		result := dls.db.FindOne(db, col, filter)
+		result := dls.Db.FindOne(db, col, filter)
 		return result
 	}
 }

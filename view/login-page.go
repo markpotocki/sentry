@@ -55,7 +55,7 @@ func postLoginPage(w http.ResponseWriter, r *http.Request) {
 	un := r.Form.Get("username")
 	pwd := r.Form.Get("password")
 	log.Printf("Request made for user: %s with pwd: %s.", un, pwd)
-	isLoggedIn := user.Login(un, pwd)
+	isLoggedIn := ls.Login(un, pwd)
 	// todo save user session
 
 	if isLoggedIn {
