@@ -2,6 +2,7 @@ package view
 
 import (
 	"html/template"
+	user "idendity-provider/user"
 	"log"
 	"net/http"
 )
@@ -37,7 +38,24 @@ func getLoginPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func postLoginPage(w http.ResponseWriter, r *http.Request) {
+	// todo remove extra logging
+	log.Println("Request to login recieved.")
+	// extract username and password from request
+	r.ParseForm() // todo add error check
+	un := r.Form.Get("username")
+	pwd := r.Form.Get("password")
+	log.Printf("Request made for user: %s with pwd: %s.", un, pwd)
+	isLoggedIn := user.Login(un, pwd)
+	// todo save user session
 
+	if isLoggedIn {
+		log.Println("User logged in successfully.")
+
+		http.Redirect(w, r, "/hello", http.StatusSeeOther)
+		return
+	}
+	log.Println("User failed to authenticate.")
+	http.Redirect(w, r, "/login?error", http.StatusUnauthorized)
 }
 
 func RegisterPage(w http.ResponseWriter, r *http.Request) {
