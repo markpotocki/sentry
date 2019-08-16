@@ -9,32 +9,32 @@ import (
 )
 
 type BasicLoginHandler struct {
-	hydraURI string
-	client   *http.Client
+	HydraURI string
+	Client   *http.Client
 }
 
 func (b BasicLoginHandler) LoginRequest(challenge string) map[string]interface{} {
-	return get(challenge, "login", b.hydraURI, b.client)
+	return get(challenge, "login", b.HydraURI, b.Client)
 }
 
 func (b BasicLoginHandler) ConsentRequest(challenge string) map[string]interface{} {
-	return get(challenge, "consent", b.hydraURI, b.client)
+	return get(challenge, "consent", b.HydraURI, b.Client)
 }
 
 func (b BasicLoginHandler) AcceptLogin(challenge string, body map[string]interface{}) string {
-	return getRedirect(put(challenge, "login", "accept", body, b.hydraURI, b.client))
+	return getRedirect(put(challenge, "login", "accept", body, b.HydraURI, b.Client))
 }
 
 func (b BasicLoginHandler) DenyLogin(challenge string, body map[string]interface{}) string {
-	return getRedirect(put(challenge, "login", "deny", body, b.hydraURI, b.client))
+	return getRedirect(put(challenge, "login", "deny", body, b.HydraURI, b.Client))
 }
 
 func (b BasicLoginHandler) AcceptConsent(challenge string, body map[string]interface{}) string {
-	return getRedirect(put(challenge, "consent", "accept", body, b.hydraURI, b.client))
+	return getRedirect(put(challenge, "consent", "accept", body, b.HydraURI, b.Client))
 }
 
 func (b BasicLoginHandler) DenyConsent(challenge string, body map[string]interface{}) string {
-	return getRedirect(put(challenge, "consent", "deny", body, b.hydraURI, b.client))
+	return getRedirect(put(challenge, "consent", "deny", body, b.HydraURI, b.Client))
 }
 
 func getRedirect(resp map[string]interface{}) string {
@@ -53,14 +53,14 @@ func getRedirect(resp map[string]interface{}) string {
 	return ""
 }
 
-func get(challenge string, flow string, uri string, client *http.Client) map[string]interface{} {
+func get(challenge string, flow string, uri string, Client *http.Client) map[string]interface{} {
 	requestURL := fmt.Sprintf("%s/oauth2/auth/requests/%s/%s", uri, flow, challenge)
 	request, err := http.NewRequest("GET", requestURL, nil)
 	if err != nil {
 		log.Fatalf("unable to create request: %v\n", err)
 	}
 
-	response, err := client.Do(request)
+	response, err := Client.Do(request)
 	if err != nil {
 		log.Fatalf("unable to get response: %v\n", err)
 	}
@@ -73,7 +73,7 @@ func get(challenge string, flow string, uri string, client *http.Client) map[str
 	return respMap
 }
 
-func put(challenge string, flow string, action string, body map[string]interface{}, uri string, client *http.Client) map[string]interface{} {
+func put(challenge string, flow string, action string, body map[string]interface{}, uri string, Client *http.Client) map[string]interface{} {
 	requestURL := fmt.Sprintf("%s/oauth2/auth/requests/%s/%s", uri, flow, challenge)
 	s, err := json.Marshal(body)
 	by := bytes.NewBuffer(s)
@@ -83,7 +83,7 @@ func put(challenge string, flow string, action string, body map[string]interface
 		log.Fatalf("unable to create request: %v\n", err)
 	}
 
-	response, err := client.Do(request)
+	response, err := Client.Do(request)
 	if err != nil {
 		log.Fatalf("unable to get response: %v\n", err)
 	}
