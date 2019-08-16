@@ -1,4 +1,4 @@
-package view
+package main
 
 import (
 	"html/template"
@@ -23,6 +23,12 @@ func LoginPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func getLoginPage(w http.ResponseWriter, r *http.Request) {
+	ses := globalSessions.SessionStart(w, r)
+	// remove this check; checks for session auth and bypasses if logged in
+	if ses.Get("Authenticated") != nil {
+		log.Println("User is already authenticated.")
+		http.Redirect(w, r, "/hello", http.StatusSeeOther)
+	}
 	pageVars := LoginPageVars{
 		PageTitle:    "MEP -- Login",
 		UsernameHelp: "Enter the username you used when registering. If your account is newer, it will be your email.",
@@ -38,6 +44,7 @@ func getLoginPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func postLoginPage(w http.ResponseWriter, r *http.Request) {
+	ses := globalSessions.SessionStart(w, r)
 	// todo remove extra logging
 	log.Println("Request to login recieved.")
 	// extract username and password from request
@@ -50,7 +57,7 @@ func postLoginPage(w http.ResponseWriter, r *http.Request) {
 
 	if isLoggedIn {
 		log.Println("User logged in successfully.")
-
+		ses.Set("Authenticated", isLoggedIn)
 		http.Redirect(w, r, "/hello", http.StatusSeeOther)
 		return
 	}
