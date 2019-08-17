@@ -1,18 +1,27 @@
 package main
 
 import (
+	"context"
+	"idendity-provider/router"
+	_ "idendity-provider/router"
 	"idendity-provider/view"
 	"log"
 	"net/http"
 )
 
 func main() {
-	fs := http.FileServer(http.Dir("templates/static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	loggingMod := func(next http.Handler) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			log.Println("main: request made, maybe we should be able to modify endpoints independently?")
+			http.Redirect(w, r, "/modworks", 415)
+			next.ServeHTTP(w, r)
+		}
+	}
 
-	http.HandleFunc("/login", view.LoginPage)
-	http.HandleFunc("/register", view.RegisterPage)
+	router.GlobalRouter.WithRoute(router.MakeRoute("/register", router.Method("BYPASS"), view.RegisterPage))
+	router.GlobalRouter.WithRoute(router.MakeRoute("/login", router.Method("BYPASS"), view.LoginPage))
+	router.GlobalRouter.WithModifier(loggingMod)
+	errchan := router.GlobalRouter.Serve(context.TODO())
 
-	log.Println("Serving content on port 8070.")
-	http.ListenAndServe(":8070", nil)
+	<-errchan
 }
