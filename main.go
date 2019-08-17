@@ -1,15 +1,12 @@
 package main
 
 import (
-<<<<<<< HEAD
-	session "idendity-provider/sessions"
-	_ "idendity-provider/sessions/memory"
-=======
 	"context"
 	"idendity-provider/router"
 	_ "idendity-provider/router"
+	session "idendity-provider/sessions"
+	_ "idendity-provider/sessions/memory"
 	"idendity-provider/view"
->>>>>>> b3489d4638612b5116e546f4b57511b1db7a24f8
 	"log"
 	"net/http"
 )
@@ -25,15 +22,10 @@ func main() {
 		}
 	}
 
-<<<<<<< HEAD
-	http.HandleFunc("/login", LoginPage)
-	http.HandleFunc("/register", RegisterPage)
-=======
 	router.GlobalRouter.WithRoute(router.MakeRoute("/register", router.Method("BYPASS"), view.RegisterPage))
 	router.GlobalRouter.WithRoute(router.MakeRoute("/login", router.Method("BYPASS"), view.LoginPage))
 	router.GlobalRouter.WithModifier(loggingMod)
 	errchan := router.GlobalRouter.Serve(context.TODO())
->>>>>>> b3489d4638612b5116e546f4b57511b1db7a24f8
 
 	<-errchan
 }
