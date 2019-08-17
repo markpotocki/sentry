@@ -4,10 +4,14 @@ import (
 	"context"
 	"idendity-provider/router"
 	_ "idendity-provider/router"
+	session "idendity-provider/sessions"
+	_ "idendity-provider/sessions/memory"
 	"idendity-provider/view"
 	"log"
 	"net/http"
 )
+
+var globalSessions *session.Manager
 
 func main() {
 	loggingMod := func(next http.Handler) http.HandlerFunc {
@@ -24,4 +28,9 @@ func main() {
 	errchan := router.GlobalRouter.Serve(context.TODO())
 
 	<-errchan
+}
+
+func init() {
+	globalSessions, _ = session.NewManager("memory", "SESSION_ID", 3600)
+	go globalSessions.GC()
 }
